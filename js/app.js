@@ -51,13 +51,13 @@ let state = {
 
 function buildDemoData() {
   const today = new Date();
-  const m = (offset) => {
-    const d = new Date(today);
-    d.setMonth(d.getMonth() + offset);
-    return d;
+  const addMonths = (offset) => {
+    const date = new Date(today);
+    date.setMonth(date.getMonth() + offset);
+    return date;
   };
-  const fmt = (d) => d.toISOString().split('T')[0];
-  const rnd = (a, b) => +(Math.random() * (b - a) + a).toFixed(2);
+  const fmt = (date) => date.toISOString().split('T')[0];
+  const randomAmount = (min, max) => +(Math.random() * (max - min) + min).toFixed(2);
 
   const transactions = [
     // Current month
@@ -122,9 +122,9 @@ function buildDemoData() {
   ];
 
   const savingsGoals = [
-    { id: generateId(), name: 'House Deposit',    target: 50000, current: 18400, targetDate: fmt(m(18)), color: '#3b82f6' },
-    { id: generateId(), name: 'Holiday — Japan',  target: 3500,  current: 1800,  targetDate: fmt(m(6)),  color: '#10b981' },
-    { id: generateId(), name: 'Emergency Fund',   target: 15000, current: 9200,  targetDate: fmt(m(10)), color: '#f59e0b' },
+    { id: generateId(), name: 'House Deposit',    target: 50000, current: 18400, targetDate: fmt(addMonths(18)), color: '#3b82f6' },
+    { id: generateId(), name: 'Holiday — Japan',  target: 3500,  current: 1800,  targetDate: fmt(addMonths(6)),  color: '#10b981' },
+    { id: generateId(), name: 'Emergency Fund',   target: 15000, current: 9200,  targetDate: fmt(addMonths(10)), color: '#f59e0b' },
   ];
 
   const investments = [
@@ -136,12 +136,12 @@ function buildDemoData() {
   ];
 
   const subscriptions = [
-    { id: generateId(), name: 'Netflix',          cost: 15.99, billingCycle: 'monthly',  renewalDate: fmt(m(1)), category: 'Entertainment' },
-    { id: generateId(), name: 'Spotify',          cost: 10.99, billingCycle: 'monthly',  renewalDate: fmt(m(1)), category: 'Entertainment' },
-    { id: generateId(), name: 'PureGym',          cost: 24.99, billingCycle: 'monthly',  renewalDate: fmt(m(1)), category: 'Health' },
-    { id: generateId(), name: 'iCloud 50GB',      cost: 2.99,  billingCycle: 'monthly',  renewalDate: fmt(m(1)), category: 'Storage' },
-    { id: generateId(), name: 'Amazon Prime',     cost: 95,    billingCycle: 'annual',   renewalDate: fmt(m(4)), category: 'Shopping' },
-    { id: generateId(), name: 'Adobe CC',         cost: 54.98, billingCycle: 'monthly',  renewalDate: fmt(m(1)), category: 'Software' },
+    { id: generateId(), name: 'Netflix',          cost: 15.99, billingCycle: 'monthly',  renewalDate: fmt(addMonths(1)), category: 'Entertainment' },
+    { id: generateId(), name: 'Spotify',          cost: 10.99, billingCycle: 'monthly',  renewalDate: fmt(addMonths(1)), category: 'Entertainment' },
+    { id: generateId(), name: 'PureGym',          cost: 24.99, billingCycle: 'monthly',  renewalDate: fmt(addMonths(1)), category: 'Health' },
+    { id: generateId(), name: 'iCloud 50GB',      cost: 2.99,  billingCycle: 'monthly',  renewalDate: fmt(addMonths(1)), category: 'Storage' },
+    { id: generateId(), name: 'Amazon Prime',     cost: 95,    billingCycle: 'annual',   renewalDate: fmt(addMonths(4)), category: 'Shopping' },
+    { id: generateId(), name: 'Adobe CC',         cost: 54.98, billingCycle: 'monthly',  renewalDate: fmt(addMonths(1)), category: 'Software' },
   ];
 
   return { transactions, budgets, savingsGoals, investments, subscriptions };
@@ -1542,8 +1542,8 @@ function getCurrentMonth() {
 
 function getMonthStr(date) {
   const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  return `${y}-${m}`;
+  const monthStr = String(date.getMonth() + 1).padStart(2, '0');
+  return `${y}-${monthStr}`;
 }
 
 function getMonthLabel(monthsAgo) {
