@@ -449,7 +449,7 @@ function renderTransactionsTable() {
           <button class="btn btn-secondary btn-icon btn-sm" onclick="openEditTransactionModal('${t.id}')" title="Edit">
             <i data-lucide="pencil"></i>
           </button>
-          <button class="btn btn-danger btn-icon btn-sm" onclick="confirmDelete('transaction','${t.id}','${escHtml(t.description).replace(/'/g,"\\'")}',deleteTransaction)" title="Delete">
+          <button class="btn btn-danger btn-icon btn-sm" onclick="confirmDelete('transaction','${t.id}','${escForOnclick(t.description)}',deleteTransaction)" title="Delete">
             <i data-lucide="trash-2"></i>
           </button>
         </div>
@@ -578,7 +578,7 @@ function renderBudget() {
           <button class="btn btn-secondary btn-icon btn-sm" onclick="openEditBudgetModal('${b.id}')" title="Edit">
             <i data-lucide="pencil"></i>
           </button>
-          <button class="btn btn-danger btn-icon btn-sm" onclick="confirmDelete('budget','${b.id}','${escHtml(b.category).replace(/'/g,"\\'")} budget',deleteBudget)" title="Delete">
+          <button class="btn btn-danger btn-icon btn-sm" onclick="confirmDelete('budget','${b.id}','${escForOnclick(b.category)} budget',deleteBudget)" title="Delete">
             <i data-lucide="trash-2"></i>
           </button>
         </div>
@@ -674,7 +674,7 @@ function renderSavingsGoals() {
           <button class="btn btn-secondary btn-icon btn-sm" onclick="openEditGoalModal('${g.id}')" title="Edit">
             <i data-lucide="pencil"></i>
           </button>
-          <button class="btn btn-danger btn-icon btn-sm" onclick="confirmDelete('goal','${g.id}','${escHtml(g.name).replace(/'/g,"\\'")}',deleteSavingsGoal)" title="Delete">
+          <button class="btn btn-danger btn-icon btn-sm" onclick="confirmDelete('goal','${g.id}','${escForOnclick(g.name)}',deleteSavingsGoal)" title="Delete">
             <i data-lucide="trash-2"></i>
           </button>
         </div>
@@ -805,7 +805,7 @@ function renderInvestments() {
           <button class="btn btn-secondary btn-icon btn-sm" onclick="openEditInvestmentModal('${inv.id}')" title="Edit">
             <i data-lucide="pencil"></i>
           </button>
-          <button class="btn btn-danger btn-icon btn-sm" onclick="confirmDelete('investment','${inv.id}','${escHtml(inv.name).replace(/'/g,"\\'")}',deleteInvestment)" title="Delete">
+          <button class="btn btn-danger btn-icon btn-sm" onclick="confirmDelete('investment','${inv.id}','${escForOnclick(inv.name)}',deleteInvestment)" title="Delete">
             <i data-lucide="trash-2"></i>
           </button>
         </div>
@@ -914,7 +914,7 @@ function renderSubscriptions() {
         <button class="btn btn-secondary btn-sm" onclick="openEditSubscriptionModal('${sub.id}')">
           <i data-lucide="pencil"></i> Edit
         </button>
-        <button class="btn btn-danger btn-sm" onclick="confirmDelete('subscription','${sub.id}','${escHtml(sub.name).replace(/'/g,"\\'")}',deleteSubscription)">
+        <button class="btn btn-danger btn-sm" onclick="confirmDelete('subscription','${sub.id}','${escForOnclick(sub.name)}',deleteSubscription)">
           <i data-lucide="trash-2"></i> Delete
         </button>
       </div>
@@ -1561,6 +1561,18 @@ function setText(id, value) {
 
 function escHtml(str) {
   return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Escape a string for safe use as a single-quoted JS string literal inside an HTML attribute.
+// Must escape backslashes first, then single quotes, then HTML-special characters.
+function escForOnclick(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\')   // backslash → \\ (JS string literal)
+    .replace(/'/g,  "\\'")    // single-quote → \' (JS string literal)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
