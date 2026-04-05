@@ -10,12 +10,13 @@ import { Input, Select } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { InsightCard } from '@/components/ui/InsightCard';
 import { DonutChart } from '@/components/charts/DonutChart';
 import { BarChartComp } from '@/components/charts/BarChartComp';
 import { Transaction, BUDGET_CATEGORIES } from '@/types';
 import { formatCurrency, formatShortDate } from '@/utils/formatters';
 import { getMonthlyIncome, getMonthlyExpenses, getMonthlySurplus, getSavingsRate, getCategoryBreakdown } from '@/utils/calculations';
-import { Plus, Pencil, Trash2, DollarSign, TrendingUp, TrendingDown, Percent, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, DollarSign, TrendingUp, TrendingDown, Percent, ArrowUpRight, ArrowDownRight, Lightbulb } from 'lucide-react';
 import { format, subMonths } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -76,6 +77,12 @@ export default function BudgetPage() {
     };
   }), [data]);
 
+  // Month-over-month comparison
+  const prevMonth = format(subMonths(new Date(selectedMonth + '-01'), 1), 'yyyy-MM');
+  const prevExpenses = useMemo(() => data ? getMonthlyExpenses(data.transactions, prevMonth) : 0, [data, prevMonth]);
+  const expenseChange = prevExpenses > 0 ? ((expenses - prevExpenses) / prevExpenses) * 100 : 0;
+  const highestCat = useMemo(() => Object.entries(catBreakdown).sort(([, a], [, b]) => b - a)[0], [catBreakdown]);
+
   if (!data) return <LoadingSpinner />;
 
   const validate = (f: FormState) => {
@@ -118,7 +125,7 @@ export default function BudgetPage() {
 
   return (
     <div>
-      <Header title="Budget" subtitle="Track income and expenses" />
+      <Header title="Budget" subtitle="Track your income and expenses" demoMode={data.settings.demoMode} />
       <div className="p-6 space-y-6">
         {/* Month selector + add */}
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
@@ -135,10 +142,46 @@ export default function BudgetPage() {
         {/* Summary cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard label="Income" value={formatCurrency(income, sym)} icon={<ArrowUpRight className="w-5 h-5" />} color="green" />
-          <StatCard label="Expenses" value={formatCurrency(expenses, sym)} icon={<ArrowDownRight className="w-5 h-5" />} color="red" />
+          <StatCard
+            label="Expenses"
+            value={formatCurrency(expenses, sym)}
+            sub={prevExpenses > 0 ? `${expenseChange > 0 ? '+' : ''}${expenseChange.toFixed(0)}% vs last month` : undefined}
+            icon={<ArrowDownRight className="w-5 h-5" />}
+            color="red"
+          />
           <StatCard label="Surplus" value={formatCurrency(surplus, sym)} icon={surplus >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />} color={surplus >= 0 ? 'blue' : 'red'} />
-          <StatCard label="Savings Rate" value={`${savingsRate.toFixed(1)}%`} icon={<Percent className="w-5 h-5" />} color="purple" />
+          <StatCard label="Savings Rate" value={`${savingsRate.toFixed(1)}%`} icon={<Percent className="w-5 h-5" />} color={savingsRate >= 20 ? 'green' : savingsRate >= 10 ? 'amber' : 'purple'} />
         </div>
+
+        {/* Spending insight */}
+        {expenses > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {expenseChange > 15 && (
+              <InsightCard
+                icon={<TrendingUp className="w-4 h-4" />}
+                title={`Spending up ${expenseChange.toFixed(0)}% vs last month`}
+                description="Review your highest categories to identify where costs increased."
+                variant="warning"
+              />
+            )}
+            {expenseChange < -10 && (
+              <InsightCard
+                icon={<TrendingDown className="w-4 h-4" />}
+                title={`Spending down ${Math.abs(expenseChange).toFixed(0)}% vs last month`}
+                description="Great work keeping costs under control this month."
+                variant="success"
+              />
+            )}
+            {highestCat && (
+              <InsightCard
+                icon={<Lightbulb className="w-4 h-4" />}
+                title={`${highestCat[0]} is your largest category`}
+                description={`${formatCurrency(highestCat[1], sym)} spent — ${((highestCat[1] / expenses) * 100).toFixed(0)}% of total expenses this month.`}
+                variant="info"
+              />
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Category breakdown */}

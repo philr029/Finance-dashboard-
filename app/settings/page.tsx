@@ -80,7 +80,7 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <Header title="Settings" subtitle="Customise your VaultFlow experience" />
+      <Header title="Settings" subtitle="Customise your VaultFlow experience" demoMode={data.settings.demoMode} />
       <div className="p-6 space-y-6 max-w-2xl">
         {/* Currency */}
         <Card>
@@ -139,19 +139,24 @@ export default function SettingsPage() {
         <Card>
           <CardHeader
             title="Demo Mode"
-            subtitle="Toggle demo seed data on/off"
-            action={<Zap className="w-5 h-5 text-gray-400" />}
+            subtitle="Sample data to showcase VaultFlow features"
+            action={<Zap className="w-5 h-5 text-amber-500" />}
           />
           <CardContent>
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {data.settings.demoMode ? 'Demo mode is active — using example data' : 'Demo mode is off'}
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                  {data.settings.demoMode ? 'Demo mode is active' : 'Using your own data'}
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  {data.settings.demoMode
+                    ? 'All data shown is sample data for demonstration. Toggle off to use real data.'
+                    : 'Demo mode is off. Your real data is being used.'}
                 </p>
               </div>
               <button
                 onClick={handleDemoToggle}
-                className={`relative w-11 h-6 rounded-full transition-colors ${data.settings.demoMode ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}
+                className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors ${data.settings.demoMode ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`}
               >
                 <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${data.settings.demoMode ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
