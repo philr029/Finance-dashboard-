@@ -96,7 +96,7 @@ export default function InvestmentsPage() {
 
   return (
     <div>
-      <Header title="Investments" subtitle="Track your portfolio performance" />
+      <Header title="Investments" subtitle="Track your portfolio performance" demoMode={data.settings.demoMode} />
       <div className="p-6 space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard label="Portfolio Value" value={formatCurrency(totalValue, sym)} icon={<BarChart3 className="w-5 h-5" />} color="blue" />

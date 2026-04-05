@@ -100,37 +100,42 @@ export default function SubscriptionsPage() {
 
   return (
     <div>
-      <Header title="Subscriptions" subtitle="Manage your recurring payments" />
+      <Header title="Subscriptions" subtitle="Manage your recurring payments" demoMode={data.settings.demoMode} />
       <div className="p-6 space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label="Monthly Cost" value={formatCurrency(totalMonthly, sym)} icon={<RefreshCcw className="w-5 h-5" />} color="blue" />
-          <StatCard label="Yearly Impact" value={formatCurrency(totalMonthly * 12, sym)} icon={<TrendingUp className="w-5 h-5" />} color="purple" />
-          <StatCard label="Subscriptions" value={String(data.subscriptions.length)} icon={<Calendar className="w-5 h-5" />} color="amber" />
+          <StatCard label="Monthly Cost" value={formatCurrency(totalMonthly, sym)} sub="All subscriptions" icon={<RefreshCcw className="w-5 h-5" />} color="blue" />
+          <StatCard label="Yearly Impact" value={formatCurrency(totalMonthly * 12, sym)} sub="Total annual spend" icon={<TrendingUp className="w-5 h-5" />} color="purple" />
+          <StatCard label="Active Plans" value={String(data.subscriptions.length)} sub={`${data.subscriptions.filter(s => s.status === 'review').length} marked for review`} icon={<Calendar className="w-5 h-5" />} color="amber" />
           {topSub && (
-            <StatCard label="Top Spend" value={topSub.name} sub={formatCurrency(topSub.cost, sym) + `/${topSub.billingCycle === 'monthly' ? 'mo' : 'yr'}`} icon={<AlertCircle className="w-5 h-5" />} color="gray" />
+            <StatCard label="Most Expensive" value={topSub.name} sub={formatCurrency(topSub.cost, sym) + `/${topSub.billingCycle === 'monthly' ? 'mo' : 'yr'}`} icon={<AlertCircle className="w-5 h-5" />} color="gray" />
           )}
         </div>
 
         {upcomingRenewals.length > 0 && (
-          <Card>
-            <CardHeader title="Upcoming Renewals" subtitle="Due in the next 14 days" />
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {upcomingRenewals.map(sub => {
-                  const days = getDaysUntil(sub.renewalDate);
-                  return (
-                    <div key={sub.id} className="flex items-center justify-between p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{sub.name}</p>
-                        <p className="text-xs text-gray-500">{days === 0 ? 'Today' : `In ${days} day${days !== 1 ? 's' : ''}`} · {formatShortDate(sub.renewalDate)}</p>
-                      </div>
-                      <span className="text-sm font-bold text-amber-600">{formatCurrency(sub.cost, sym)}</span>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+              ⚡ {upcomingRenewals.length} Renewal{upcomingRenewals.length !== 1 ? 's' : ''} Due Soon
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {upcomingRenewals.map(sub => {
+                const days = getDaysUntil(sub.renewalDate);
+                const isUrgent = days <= 3;
+                return (
+                  <div key={sub.id} className={`flex items-center justify-between p-4 rounded-xl border ${isUrgent ? 'bg-red-50 dark:bg-red-950/20 border-red-100 dark:border-red-900/40' : 'bg-amber-50 dark:bg-amber-950/20 border-amber-100 dark:border-amber-900/40'}`}>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{sub.name}</p>
+                      <p className={`text-xs font-medium mt-0.5 ${isUrgent ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                        {days === 0 ? 'Renewing today' : `In ${days} day${days !== 1 ? 's' : ''}`} · {formatShortDate(sub.renewalDate)}
+                      </p>
                     </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                    <span className={`text-sm font-bold tabular-nums ${isUrgent ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                      {formatCurrency(sub.cost, sym)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         )}
 
         <Card>

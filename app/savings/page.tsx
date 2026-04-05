@@ -86,7 +86,7 @@ export default function SavingsPage() {
 
   return (
     <div>
-      <Header title="Savings" subtitle="Track your saving goals and pots" />
+      <Header title="Savings" subtitle="Track your saving goals and pots" demoMode={data.settings.demoMode} />
       <div className="p-6 space-y-6">
         {/* Summary */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -100,16 +100,16 @@ export default function SavingsPage() {
         <Card>
           <CardHeader
             title="Saving Pots"
-            subtitle={`${data.savingsPots.length} pot${data.savingsPots.length !== 1 ? 's' : ''}`}
+            subtitle={`${data.savingsPots.length} pot${data.savingsPots.length !== 1 ? 's' : ''} · ${formatCurrency(totalSaved, sym)} saved`}
             action={<Button onClick={openAdd} size="sm"><Plus className="w-4 h-4" />Add Pot</Button>}
           />
           <CardContent>
             {data.savingsPots.length === 0 ? (
               <EmptyState
                 icon={<PiggyBank className="w-8 h-8" />}
-                title="No saving pots yet"
-                description="Create a savings pot to start tracking your goals"
-                action={<Button onClick={openAdd}><Plus className="w-4 h-4" />Add Your First Pot</Button>}
+                title="Start your savings journey"
+                description="Create a savings pot for any goal — emergency fund, holiday, new gadget, or a house deposit."
+                action={<Button onClick={openAdd}><Plus className="w-4 h-4" />Create Your First Pot</Button>}
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -118,18 +118,18 @@ export default function SavingsPage() {
                   const months = getMonthsToGoal(pot);
                   const remaining = pot.targetAmount - pot.currentAmount;
                   return (
-                    <div key={pot.id} className="p-5 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:shadow-md transition-all duration-200">
+                    <div key={pot.id} className="p-5 rounded-2xl border border-gray-100 dark:border-gray-800/60 bg-white dark:bg-gray-900 hover:shadow-md transition-all duration-200 group">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${pot.color}20` }}>
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${pot.color}20` }}>
                             <PiggyBank className="w-5 h-5" style={{ color: pot.color }} />
                           </div>
                           <div>
                             <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{pot.name}</h3>
-                            <p className="text-xs text-gray-500">{formatCurrency(pot.monthlyContribution, sym)}/month</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">{formatCurrency(pot.monthlyContribution, sym)}/month contribution</p>
                           </div>
                         </div>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => openEdit(pot)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
@@ -139,9 +139,9 @@ export default function SavingsPage() {
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>{formatCurrency(pot.currentAmount, sym)} saved</span>
-                          <span>{formatCurrency(pot.targetAmount, sym)} goal</span>
+                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 tabular-nums">
+                          <span className="font-medium text-gray-900 dark:text-white">{formatCurrency(pot.currentAmount, sym)}</span>
+                          <span>of {formatCurrency(pot.targetAmount, sym)}</span>
                         </div>
                         <ProgressBar value={pot.currentAmount} max={pot.targetAmount} color={pot.color} height="md" />
                       </div>
@@ -149,13 +149,13 @@ export default function SavingsPage() {
                         <Badge variant={pct >= 100 ? 'success' : pct >= 75 ? 'info' : 'default'}>
                           {Math.round(pct)}% complete
                         </Badge>
-                        {months !== null && months > 0 && (
-                          <span className="text-xs text-gray-400 flex items-center gap-1">
+                        {remaining > 0 && months !== null && months > 0 && (
+                          <span className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
                             <Clock className="w-3 h-3" />
-                            {months} months to go
+                            ~{months} month{months !== 1 ? 's' : ''} to go
                           </span>
                         )}
-                        {remaining <= 0 && <Badge variant="success">Goal reached! 🎉</Badge>}
+                        {remaining <= 0 && <Badge variant="success">🎉 Goal reached!</Badge>}
                       </div>
                     </div>
                   );

@@ -83,14 +83,14 @@ export default function DebtPage() {
 
   return (
     <div>
-      <Header title="Debt" subtitle="Track and pay off your debts" />
+      <Header title="Debt" subtitle="Track and pay off your debts" demoMode={data.settings.demoMode} />
       <div className="p-6 space-y-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label="Total Debt" value={formatCurrency(totalDebt, sym)} icon={<CreditCard className="w-5 h-5" />} color="red" />
-          <StatCard label="Number of Debts" value={String(data.debts.length)} icon={<TrendingDown className="w-5 h-5" />} color="amber" />
-          <StatCard label="Min. Monthly Payments" value={formatCurrency(totalMinPayment, sym)} icon={<Calendar className="w-5 h-5" />} color="blue" />
+          <StatCard label="Total Debt" value={formatCurrency(totalDebt, sym)} sub={`${data.debts.length} account${data.debts.length !== 1 ? 's' : ''}`} icon={<CreditCard className="w-5 h-5" />} color="red" />
+          <StatCard label="Min. Monthly" value={formatCurrency(totalMinPayment, sym)} sub="Minimum payments total" icon={<Calendar className="w-5 h-5" />} color="amber" />
+          <StatCard label="Min. Annual Cost" value={formatCurrency(totalMinPayment * 12, sym)} sub="At minimum payments" icon={<TrendingDown className="w-5 h-5" />} color="blue" />
           {highestAPR && (
-            <StatCard label="Highest APR" value={`${highestAPR.apr}%`} sub={highestAPR.name} icon={<Flame className="w-5 h-5" />} color="red" />
+            <StatCard label="Highest APR" value={`${highestAPR.apr}%`} sub={`${highestAPR.name} — tackle first`} icon={<Flame className="w-5 h-5" />} color="red" />
           )}
         </div>
 

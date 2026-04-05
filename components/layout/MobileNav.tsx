@@ -6,6 +6,8 @@ import { cn } from '@/utils/formatters';
 import { useState } from 'react';
 import { RefreshCcw, BarChart3, Wrench, Settings } from 'lucide-react';
 
+import { Vault } from 'lucide-react';
+
 const mainNav = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/savings', label: 'Savings', icon: PiggyBank },
