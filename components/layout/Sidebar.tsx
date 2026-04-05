@@ -40,7 +40,7 @@ export function Sidebar() {
     <aside className="hidden lg:flex flex-col w-64 min-h-screen bg-white dark:bg-gray-950 border-r border-gray-100 dark:border-gray-800/60 fixed top-0 left-0 bottom-0 z-40">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100 dark:border-gray-800/60">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-sm shadow-blue-200 dark:shadow-blue-900/30">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md shadow-blue-500/20 dark:shadow-blue-700/40">
           <Vault className="w-4 h-4 text-white" strokeWidth={2} />
         </div>
         <div>
