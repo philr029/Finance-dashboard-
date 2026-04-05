@@ -156,7 +156,7 @@ function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
     console.error('Failed to save state:', e);
-    toast('Could not save data — storage may be full.', 'error');
+    toast('Could not save data. Please check your browser storage settings (storage may be full or disabled).', 'error');
   }
 }
 
@@ -1529,6 +1529,10 @@ function formatDate(dateString) {
 }
 
 function generateId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  // Fallback for environments without crypto.randomUUID
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
 }
 
