@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinanceFlow — Personal Finance Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+  <!-- ===== LOADING OVERLAY ===== -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading FinanceFlow…</p>
+    </div>
+  </div>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- ===== APP SHELL ===== -->
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon-wrap">
+            <i data-lucide="trending-up"></i>
+          </div>
+          <span class="logo-text">FinanceFlow</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="dashboard">
+          <i data-lucide="home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-section="transactions">
+          <i data-lucide="arrow-left-right"></i>
+          <span>Transactions</span>
+        </a>
+        <a href="#" class="nav-item" data-section="budget">
+          <i data-lucide="wallet"></i>
+          <span>Budget</span>
+        </a>
+        <a href="#" class="nav-item" data-section="savings">
+          <i data-lucide="piggy-bank"></i>
+          <span>Savings Goals</span>
+        </a>
+        <a href="#" class="nav-item" data-section="investments">
+          <i data-lucide="trending-up"></i>
+          <span>Investments</span>
+        </a>
+        <a href="#" class="nav-item" data-section="subscriptions">
+          <i data-lucide="repeat"></i>
+          <span>Subscriptions</span>
+        </a>
+        <a href="#" class="nav-item" data-section="tools">
+          <i data-lucide="wrench"></i>
+          <span>Tools</span>
+        </a>
+        <a href="#" class="nav-item" data-section="settings">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">
+          <i data-lucide="sun" id="theme-icon"></i>
+          <span id="theme-label">Light Mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="main-content">
+
+      <!-- ===================== DASHBOARD ===================== -->
+      <section id="section-dashboard" class="section active">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Dashboard</h1>
+            <p class="section-subtitle" id="dashboard-greeting">Welcome back! Here's your financial overview.</p>
+          </div>
+          <div class="header-actions">
+            <div class="health-badge" id="health-badge">
+              <span class="health-badge-label">Health Score</span>
+              <span class="health-badge-value" id="health-score-value">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-blue">
+              <i data-lucide="wallet"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Total Balance</p>
+              <p class="stat-value" id="stat-total-balance">£0.00</p>
+              <p class="stat-change neutral" id="stat-balance-change">All time</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-green">
+              <i data-lucide="trending-up"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Monthly Income</p>
+              <p class="stat-value" id="stat-monthly-income">£0.00</p>
+              <p class="stat-change" id="stat-income-change">This month</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-red">
+              <i data-lucide="arrow-left-right"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Monthly Expenses</p>
+              <p class="stat-value" id="stat-monthly-expenses">£0.00</p>
+              <p class="stat-change" id="stat-expenses-change">This month</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-purple">
+              <i data-lucide="piggy-bank"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Savings Rate</p>
+              <p class="stat-value" id="stat-savings-rate">0%</p>
+              <p class="stat-change" id="stat-savings-change">This month</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-amber">
+              <i data-lucide="trending-up"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Investment Total</p>
+              <p class="stat-value" id="stat-investment-total">£0.00</p>
+              <p class="stat-change" id="stat-investment-change">Portfolio value</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-navy">
+              <i data-lucide="home"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Net Worth</p>
+              <p class="stat-value" id="stat-net-worth">£0.00</p>
+              <p class="stat-change" id="stat-networth-change">Balance + investments</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3 class="card-title">Income vs Expenses</h3>
+              <span class="card-subtitle">Last 6 months</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="canvas-income-expenses"></canvas>
+            </div>
+          </div>
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3 class="card-title">Spending by Category</h3>
+              <span class="card-subtitle">This month</span>
+            </div>
+            <div class="chart-container chart-container-sm">
+              <canvas id="canvas-spending-category"></canvas>
+            </div>
+          </div>
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3 class="card-title">Savings Growth</h3>
+              <span class="card-subtitle">Last 12 months</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="canvas-savings-growth"></canvas>
+            </div>
+          </div>
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3 class="card-title">Investment Allocation</h3>
+              <span class="card-subtitle">By asset type</span>
+            </div>
+            <div class="chart-container chart-container-sm">
+              <canvas id="canvas-investment-allocation"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Transactions</h3>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('transactions')">
+              View All <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody id="recent-transactions-body">
+                <tr><td colspan="5" class="empty-cell">No transactions yet</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== TRANSACTIONS ===================== -->
+      <section id="section-transactions" class="section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Transactions</h1>
+            <p class="section-subtitle">Track all your income and expenses</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" id="btn-export-csv">
+              <i data-lucide="download"></i> Export CSV
+            </button>
+            <button class="btn btn-secondary" id="btn-load-demo-transactions">
+              <i data-lucide="upload"></i> Demo Data
+            </button>
+            <button class="btn btn-primary" id="btn-add-transaction">
+              <i data-lucide="plus"></i> Add Transaction
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card filters-card">
+          <div class="filters-row">
+            <div class="search-box">
+              <i data-lucide="search" class="search-icon"></i>
+              <input type="text" id="transaction-search" class="search-input" placeholder="Search transactions…">
+            </div>
+            <select id="filter-type" class="filter-select">
+              <option value="all">All Types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+            <select id="filter-category" class="filter-select">
+              <option value="all">All Categories</option>
+            </select>
+            <input type="date" id="filter-date-start" class="filter-select" title="From date">
+            <input type="date" id="filter-date-end" class="filter-select" title="To date">
+          </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="card">
+          <div class="table-container">
+            <table class="data-table" id="transactions-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="transactions-body">
+                <tr>
+                  <td colspan="6">
+                    <div class="empty-state">
+                      <i data-lucide="arrow-left-right" class="empty-icon"></i>
+                      <p class="empty-title">No transactions yet</p>
+                      <p class="empty-desc">Add your first transaction or load demo data to get started</p>
+                      <button class="btn btn-primary" onclick="openAddTransactionModal()">
+                        <i data-lucide="plus"></i> Add Transaction
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== BUDGET ===================== -->
+      <section id="section-budget" class="section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Budget</h1>
+            <p class="section-subtitle">Manage your monthly spending limits</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="btn-add-budget">
+              <i data-lucide="plus"></i> Add Budget
+            </button>
+          </div>
+        </div>
+
+        <!-- Budget Summary -->
+        <div class="card budget-summary-card">
+          <div class="budget-summary-grid">
+            <div class="budget-summary-item">
+              <p class="budget-summary-label">Total Budgeted</p>
+              <p class="budget-summary-value" id="budget-total-budgeted">£0.00</p>
+            </div>
+            <div class="budget-summary-item">
+              <p class="budget-summary-label">Total Spent</p>
+              <p class="budget-summary-value" id="budget-total-spent">£0.00</p>
+            </div>
+            <div class="budget-summary-item">
+              <p class="budget-summary-label">Remaining</p>
+              <p class="budget-summary-value" id="budget-remaining">£0.00</p>
+            </div>
+            <div class="budget-summary-item">
+              <p class="budget-summary-label">Budget Status</p>
+              <p class="budget-summary-value" id="budget-status">—</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget Cards -->
+        <div class="budget-cards-grid" id="budget-cards-container">
+          <div class="empty-state-container">
+            <div class="empty-state">
+              <i data-lucide="wallet" class="empty-icon"></i>
+              <p class="empty-title">No budgets set</p>
+              <p class="empty-desc">Create spending limits for your categories</p>
+              <button class="btn btn-primary" onclick="openAddBudgetModal()">
+                <i data-lucide="plus"></i> Add Budget
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SAVINGS GOALS ===================== -->
+      <section id="section-savings" class="section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Savings Goals</h1>
+            <p class="section-subtitle">Track your progress towards financial targets</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="btn-add-goal">
+              <i data-lucide="plus"></i> Add Goal
+            </button>
+          </div>
+        </div>
+
+        <div class="goals-grid" id="savings-goals-container">
+          <div class="empty-state-container">
+            <div class="empty-state">
+              <i data-lucide="piggy-bank" class="empty-icon"></i>
+              <p class="empty-title">No savings goals yet</p>
+              <p class="empty-desc">Set up a goal to start tracking your progress</p>
+              <button class="btn btn-primary" onclick="openAddGoalModal()">
+                <i data-lucide="plus"></i> Add Goal
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== INVESTMENTS ===================== -->
+      <section id="section-investments" class="section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Investments</h1>
+            <p class="section-subtitle">Monitor your investment portfolio performance</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="btn-add-investment">
+              <i data-lucide="plus"></i> Add Investment
+            </button>
+          </div>
+        </div>
+
+        <!-- Portfolio Summary -->
+        <div class="portfolio-summary" id="portfolio-summary">
+          <div class="card portfolio-card">
+            <p class="portfolio-label">Total Value</p>
+            <p class="portfolio-value" id="portfolio-total-value">£0.00</p>
+          </div>
+          <div class="card portfolio-card">
+            <p class="portfolio-label">Total Cost</p>
+            <p class="portfolio-value" id="portfolio-total-cost">£0.00</p>
+          </div>
+          <div class="card portfolio-card">
+            <p class="portfolio-label">Gain / Loss</p>
+            <p class="portfolio-value" id="portfolio-gain-loss">£0.00</p>
+          </div>
+          <div class="card portfolio-card">
+            <p class="portfolio-label">Return %</p>
+            <p class="portfolio-value" id="portfolio-gain-percent">0%</p>
+          </div>
+        </div>
+
+        <!-- Investment Table -->
+        <div class="card">
+          <div class="table-container">
+            <table class="data-table" id="investments-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Units</th>
+                  <th>Buy Price</th>
+                  <th>Current Price</th>
+                  <th>Value</th>
+                  <th>Gain / Loss</th>
+                  <th>Allocation</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="investments-body">
+                <tr>
+                  <td colspan="9">
+                    <div class="empty-state">
+                      <i data-lucide="trending-up" class="empty-icon"></i>
+                      <p class="empty-title">No investments tracked</p>
+                      <p class="empty-desc">Add your holdings to monitor performance</p>
+                      <button class="btn btn-primary" onclick="openAddInvestmentModal()">
+                        <i data-lucide="plus"></i> Add Investment
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SUBSCRIPTIONS ===================== -->
+      <section id="section-subscriptions" class="section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Subscriptions</h1>
+            <p class="section-subtitle">Track your recurring payments</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="btn-add-subscription">
+              <i data-lucide="plus"></i> Add Subscription
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="card subscription-summary-card">
+          <div class="subscription-summary-grid">
+            <div class="sub-summary-item">
+              <p class="sub-summary-label">Monthly Total</p>
+              <p class="sub-summary-value" id="sub-monthly-total">£0.00</p>
+            </div>
+            <div class="sub-summary-item">
+              <p class="sub-summary-label">Annual Total</p>
+              <p class="sub-summary-value" id="sub-annual-total">£0.00</p>
+            </div>
+            <div class="sub-summary-item">
+              <p class="sub-summary-label">Active</p>
+              <p class="sub-summary-value" id="sub-active-count">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subscription Cards -->
+        <div class="subscriptions-grid" id="subscriptions-container">
+          <div class="empty-state-container">
+            <div class="empty-state">
+              <i data-lucide="repeat" class="empty-icon"></i>
+              <p class="empty-title">No subscriptions tracked</p>
+              <p class="empty-desc">Add subscriptions to see your total monthly spend</p>
+              <button class="btn btn-primary" onclick="openAddSubscriptionModal()">
+                <i data-lucide="plus"></i> Add Subscription
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== TOOLS ===================== -->
+      <section id="section-tools" class="section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Financial Tools</h1>
+            <p class="section-subtitle">Calculators to help plan your financial future</p>
+          </div>
+        </div>
+
+        <div class="tools-grid">
+
+          <!-- Compound Interest Calculator -->
+          <div class="card tool-card">
+            <div class="tool-header">
+              <div class="tool-icon tool-icon-blue">
+                <i data-lucide="trending-up"></i>
+              </div>
+              <div>
+                <h3 class="tool-title">Compound Interest</h3>
+                <p class="tool-subtitle">Calculate investment growth over time</p>
+              </div>
+            </div>
+            <form id="form-compound-interest" class="tool-form" onsubmit="calcAndShowCompoundInterest(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Principal (£)</label>
+                  <input type="number" id="ci-principal" class="form-input" placeholder="10000" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Annual Rate (%)</label>
+                  <input type="number" id="ci-rate" class="form-input" placeholder="7" min="0" step="0.01">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Years</label>
+                  <input type="number" id="ci-years" class="form-input" placeholder="10" min="1" step="1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Compounds/Year</label>
+                  <select id="ci-compounds" class="form-input">
+                    <option value="1">Annually</option>
+                    <option value="4">Quarterly</option>
+                    <option value="12" selected>Monthly</option>
+                    <option value="365">Daily</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">Calculate</button>
+            </form>
+            <div id="result-compound-interest" class="tool-result" style="display:none">
+              <div class="result-grid">
+                <div class="result-item">
+                  <p class="result-label">Future Value</p>
+                  <p class="result-value" id="ci-future-value">—</p>
+                </div>
+                <div class="result-item">
+                  <p class="result-label">Total Interest</p>
+                  <p class="result-value" id="ci-total-interest">—</p>
+                </div>
+                <div class="result-item">
+                  <p class="result-label">Total Return</p>
+                  <p class="result-value" id="ci-total-return">—</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Savings Goal Calculator -->
+          <div class="card tool-card">
+            <div class="tool-header">
+              <div class="tool-icon tool-icon-green">
+                <i data-lucide="piggy-bank"></i>
+              </div>
+              <div>
+                <h3 class="tool-title">Savings Goal</h3>
+                <p class="tool-subtitle">How long to reach your target?</p>
+              </div>
+            </div>
+            <form id="form-savings-goal-calc" class="tool-form" onsubmit="calcAndShowSavingsGoal(event)">
+              <div class="form-group">
+                <label class="form-label">Goal Amount (£)</label>
+                <input type="number" id="sg-goal" class="form-input" placeholder="20000" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Monthly Savings (£)</label>
+                <input type="number" id="sg-monthly" class="form-input" placeholder="500" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Annual Interest Rate (%)</label>
+                <input type="number" id="sg-rate" class="form-input" placeholder="3.5" min="0" step="0.01">
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">Calculate</button>
+            </form>
+            <div id="result-savings-goal-calc" class="tool-result" style="display:none">
+              <div class="result-grid">
+                <div class="result-item">
+                  <p class="result-label">Months to Goal</p>
+                  <p class="result-value" id="sg-months">—</p>
+                </div>
+                <div class="result-item">
+                  <p class="result-label">Years to Goal</p>
+                  <p class="result-value" id="sg-years">—</p>
+                </div>
+                <div class="result-item">
+                  <p class="result-label">Target Date</p>
+                  <p class="result-value" id="sg-target-date">—</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Debt Payoff Calculator -->
+          <div class="card tool-card">
+            <div class="tool-header">
+              <div class="tool-icon tool-icon-red">
+                <i data-lucide="wallet"></i>
+              </div>
+              <div>
+                <h3 class="tool-title">Debt Payoff</h3>
+                <p class="tool-subtitle">Plan your debt repayment strategy</p>
+              </div>
+            </div>
+            <form id="form-debt-payoff" class="tool-form" onsubmit="calcAndShowDebtPayoff(event)">
+              <div class="form-group">
+                <label class="form-label">Balance Owed (£)</label>
+                <input type="number" id="dp-balance" class="form-input" placeholder="5000" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Annual Interest Rate (%)</label>
+                <input type="number" id="dp-rate" class="form-input" placeholder="19.9" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Monthly Payment (£)</label>
+                <input type="number" id="dp-payment" class="form-input" placeholder="200" min="0" step="0.01">
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">Calculate</button>
+            </form>
+            <div id="result-debt-payoff" class="tool-result" style="display:none">
+              <div class="result-grid">
+                <div class="result-item">
+                  <p class="result-label">Payoff Time</p>
+                  <p class="result-value" id="dp-payoff-time">—</p>
+                </div>
+                <div class="result-item">
+                  <p class="result-label">Total Interest</p>
+                  <p class="result-value" id="dp-total-interest">—</p>
+                </div>
+                <div class="result-item">
+                  <p class="result-label">Total Paid</p>
+                  <p class="result-value" id="dp-total-paid">—</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Fund Calculator -->
+          <div class="card tool-card">
+            <div class="tool-header">
+              <div class="tool-icon tool-icon-amber">
+                <i data-lucide="home"></i>
+              </div>
+              <div>
+                <h3 class="tool-title">Emergency Fund</h3>
+                <p class="tool-subtitle">Calculate your safety net target</p>
+              </div>
+            </div>
+            <form id="form-emergency-fund" class="tool-form" onsubmit="calcAndShowEmergencyFund(event)">
+              <div class="form-group">
+                <label class="form-label">Monthly Expenses (£)</label>
+                <input type="number" id="ef-monthly" class="form-input" placeholder="2500" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Months of Coverage</label>
+                <select id="ef-months" class="form-input">
+                  <option value="3">3 months (minimum)</option>
+                  <option value="6" selected>6 months (recommended)</option>
+                  <option value="9">9 months</option>
+                  <option value="12">12 months (conservative)</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">Calculate</button>
+            </form>
+            <div id="result-emergency-fund" class="tool-result" style="display:none">
+              <div class="result-grid">
+                <div class="result-item">
+                  <p class="result-label">Target Fund</p>
+                  <p class="result-value" id="ef-target">—</p>
+                </div>
+                <div class="result-item">
+                  <p class="result-label">Monthly Rate</p>
+                  <p class="result-value" id="ef-coverage">—</p>
+                </div>
+                <div class="result-item">
+                  <p class="result-label">Daily Rate</p>
+                  <p class="result-value" id="ef-daily">—</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ===================== SETTINGS ===================== -->
+      <section id="section-settings" class="section">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">Settings</h1>
+            <p class="section-subtitle">Customise your FinanceFlow experience</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+
+          <!-- Appearance -->
+          <div class="card settings-card">
+            <h3 class="settings-card-title">Appearance</h3>
+            <div class="settings-group">
+              <div class="settings-item">
+                <div class="settings-item-label">
+                  <p class="settings-label">Theme</p>
+                  <p class="settings-desc">Choose light or dark mode</p>
+                </div>
+                <div class="toggle-group">
+                  <button class="toggle-btn active" id="theme-light-btn" onclick="setTheme('light')">
+                    <i data-lucide="sun"></i> Light
+                  </button>
+                  <button class="toggle-btn" id="theme-dark-btn" onclick="setTheme('dark')">
+                    <i data-lucide="moon"></i> Dark
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Currency -->
+          <div class="card settings-card">
+            <h3 class="settings-card-title">Currency</h3>
+            <div class="settings-group">
+              <div class="settings-item">
+                <div class="settings-item-label">
+                  <p class="settings-label">Display Currency</p>
+                  <p class="settings-desc">Set your preferred currency symbol</p>
+                </div>
+                <div class="toggle-group">
+                  <button class="toggle-btn" id="currency-gbp-btn" onclick="setCurrency('GBP')">£ GBP</button>
+                  <button class="toggle-btn" id="currency-usd-btn" onclick="setCurrency('USD')">$ USD</button>
+                  <button class="toggle-btn" id="currency-eur-btn" onclick="setCurrency('EUR')">€ EUR</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Management -->
+          <div class="card settings-card">
+            <h3 class="settings-card-title">Data Management</h3>
+            <div class="settings-group">
+              <div class="settings-item settings-item-row">
+                <div class="settings-item-label">
+                  <p class="settings-label">Load Demo Data</p>
+                  <p class="settings-desc">Populate the app with sample data to explore features</p>
+                </div>
+                <button class="btn btn-secondary" id="btn-load-demo-settings">
+                  <i data-lucide="upload"></i> Load Demo
+                </button>
+              </div>
+              <div class="settings-divider"></div>
+              <div class="settings-item settings-item-row">
+                <div class="settings-item-label">
+                  <p class="settings-label">Reset All Data</p>
+                  <p class="settings-desc danger-text">Permanently deletes all your transactions, budgets, and goals</p>
+                </div>
+                <button class="btn btn-danger" id="btn-reset-data">
+                  <i data-lucide="trash-2"></i> Reset Data
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- About -->
+          <div class="card settings-card">
+            <h3 class="settings-card-title">About FinanceFlow</h3>
+            <div class="settings-group">
+              <div class="app-info">
+                <div class="app-info-logo">
+                  <i data-lucide="trending-up"></i>
+                </div>
+                <div>
+                  <p class="app-name">FinanceFlow</p>
+                  <p class="app-version">Version 1.0.0</p>
+                  <p class="app-desc">Your personal finance companion. All data is stored locally in your browser — no accounts, no servers, completely private.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== BOTTOM NAV (Mobile) ===== -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <a href="#" class="bottom-nav-item active" data-section="dashboard">
+      <i data-lucide="home"></i>
+      <span>Home</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-section="transactions">
+      <i data-lucide="arrow-left-right"></i>
+      <span>Transactions</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-section="budget">
+      <i data-lucide="wallet"></i>
+      <span>Budget</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-section="savings">
+      <i data-lucide="piggy-bank"></i>
+      <span>Savings</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-section="investments">
+      <i data-lucide="trending-up"></i>
+      <span>Invest</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-section="subscriptions">
+      <i data-lucide="repeat"></i>
+      <span>Subs</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-section="tools">
+      <i data-lucide="wrench"></i>
+      <span>Tools</span>
+    </a>
+    <a href="#" class="bottom-nav-item" data-section="settings">
+      <i data-lucide="settings"></i>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <!-- ===================================================== -->
+  <!-- MODALS                                                 -->
+  <!-- ===================================================== -->
+
+  <!-- Add/Edit Transaction Modal -->
+  <div id="modal-transaction" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-transaction-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-transaction-title">Add Transaction</h2>
+        <button class="modal-close" onclick="closeModal('modal-transaction')" aria-label="Close modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-transaction" class="modal-body" onsubmit="submitTransactionForm(event)">
+        <input type="hidden" id="transaction-edit-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="t-type">Type</label>
+            <select id="t-type" class="form-input" required onchange="updateCategoryOptions()">
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="t-date">Date</label>
+            <input type="date" id="t-date" class="form-input" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="t-description">Description</label>
+          <input type="text" id="t-description" class="form-input" placeholder="e.g. Tesco Weekly Shop" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="t-amount">Amount</label>
+            <input type="number" id="t-amount" class="form-input" placeholder="0.00" min="0.01" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="t-category">Category</label>
+            <select id="t-category" class="form-input" required></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="t-notes">Notes (optional)</label>
+          <input type="text" id="t-notes" class="form-input" placeholder="Additional notes…">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-transaction')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-transaction">Save Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add/Edit Budget Modal -->
+  <div id="modal-budget" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-budget-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-budget-title">Add Budget</h2>
+        <button class="modal-close" onclick="closeModal('modal-budget')" aria-label="Close modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-budget" class="modal-body" onsubmit="submitBudgetForm(event)">
+        <input type="hidden" id="budget-edit-id">
+        <div class="form-group">
+          <label class="form-label" for="b-category">Category</label>
+          <select id="b-category" class="form-input" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="b-amount">Monthly Budget Amount</label>
+          <input type="number" id="b-amount" class="form-input" placeholder="500.00" min="1" step="0.01" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-budget')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Budget</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add/Edit Savings Goal Modal -->
+  <div id="modal-goal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-goal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-goal-title">Add Savings Goal</h2>
+        <button class="modal-close" onclick="closeModal('modal-goal')" aria-label="Close modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-goal" class="modal-body" onsubmit="submitGoalForm(event)">
+        <input type="hidden" id="goal-edit-id">
+        <div class="form-group">
+          <label class="form-label" for="g-name">Goal Name</label>
+          <input type="text" id="g-name" class="form-input" placeholder="e.g. House Deposit" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="g-target">Target Amount</label>
+            <input type="number" id="g-target" class="form-input" placeholder="50000" min="1" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="g-current">Current Amount</label>
+            <input type="number" id="g-current" class="form-input" placeholder="0" min="0" step="0.01" value="0">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="g-date">Target Date</label>
+            <input type="date" id="g-date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="g-color">Colour</label>
+            <select id="g-color" class="form-input">
+              <option value="#3b82f6">Blue</option>
+              <option value="#10b981">Green</option>
+              <option value="#f59e0b">Amber</option>
+              <option value="#8b5cf6">Purple</option>
+              <option value="#ef4444">Red</option>
+              <option value="#0a2463">Navy</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-goal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add/Edit Investment Modal -->
+  <div id="modal-investment" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-investment-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-investment-title">Add Investment</h2>
+        <button class="modal-close" onclick="closeModal('modal-investment')" aria-label="Close modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-investment" class="modal-body" onsubmit="submitInvestmentForm(event)">
+        <input type="hidden" id="investment-edit-id">
+        <div class="form-group">
+          <label class="form-label" for="inv-name">Investment Name</label>
+          <input type="text" id="inv-name" class="form-input" placeholder="e.g. S&amp;P 500 ETF" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="inv-type">Type</label>
+            <select id="inv-type" class="form-input" required>
+              <option value="ETF">ETF</option>
+              <option value="Stock">Stock</option>
+              <option value="Crypto">Crypto</option>
+              <option value="Bond">Bond</option>
+              <option value="Cash">Cash</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inv-units">Units / Shares</label>
+            <input type="number" id="inv-units" class="form-input" placeholder="10" min="0" step="any" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="inv-buy-price">Buy Price (per unit)</label>
+            <input type="number" id="inv-buy-price" class="form-input" placeholder="100.00" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inv-current-price">Current Price (per unit)</label>
+            <input type="number" id="inv-current-price" class="form-input" placeholder="120.00" min="0" step="0.01" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-investment')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Investment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add/Edit Subscription Modal -->
+  <div id="modal-subscription" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-subscription-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-subscription-title">Add Subscription</h2>
+        <button class="modal-close" onclick="closeModal('modal-subscription')" aria-label="Close modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-subscription" class="modal-body" onsubmit="submitSubscriptionForm(event)">
+        <input type="hidden" id="subscription-edit-id">
+        <div class="form-group">
+          <label class="form-label" for="sub-name">Service Name</label>
+          <input type="text" id="sub-name" class="form-input" placeholder="e.g. Netflix" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="sub-cost">Cost</label>
+            <input type="number" id="sub-cost" class="form-input" placeholder="9.99" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sub-cycle">Billing Cycle</label>
+            <select id="sub-cycle" class="form-input" required>
+              <option value="monthly">Monthly</option>
+              <option value="annual">Annual</option>
+              <option value="weekly">Weekly</option>
+              <option value="quarterly">Quarterly</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="sub-renewal">Renewal Date</label>
+            <input type="date" id="sub-renewal" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sub-category">Category</label>
+            <select id="sub-category" class="form-input">
+              <option value="Entertainment">Entertainment</option>
+              <option value="Productivity">Productivity</option>
+              <option value="Health">Health &amp; Fitness</option>
+              <option value="Storage">Storage &amp; Cloud</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Software">Software</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-subscription')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Subscription</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div id="modal-confirm-delete" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-delete-title">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-delete-title">Confirm Delete</h2>
+        <button class="modal-close" onclick="closeModal('modal-confirm-delete')" aria-label="Close modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-delete-message" class="confirm-message">Are you sure you want to delete this item? This action cannot be undone.</p>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-confirm-delete')">Cancel</button>
+          <button type="button" class="btn btn-danger" id="btn-confirm-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
